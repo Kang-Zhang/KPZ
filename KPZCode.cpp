@@ -61,6 +61,7 @@ double energy (matrix& L_new, int N, double Dx, double Dy){
     return E;
 }
 
+
 double vortices(matrix& L_new, int N){
     double num = 0;
     double d[4];
@@ -105,14 +106,11 @@ int main(){
     stringstream cL;
     cL << fixed << setprecision(1) << c_L;
     ofstream write_outputE ("KPZProjectGraphs/" + cL.str()+ "E.txt");
-    //string filename = to_string(c_L) + "_" to_string(R);
-    //ofstream write_output (filename);
-    //stringstream cLV;
-    //cLV << fixed << setprecision(1) << c_L << "V.txt";
-    ofstream write_outputV ("KPZProjectGraphs/" + cL.str()+ "V.txt");
+    ofstream write_outputV ("KPZProjectGraphs/" + cL.str()+ "V.txt"); //this seems to give nan in E file
 
     array<double, max_iters> meanEdensity;
-    //array<double, max_iters> meanVdensity;
+    //array<double, max_iters> meanVdensity; //this seems to give nan in E file
+
     for (int r = 0; r<R;r++)
     {
         uniform_real_distribution<> dis(0,2*M_PI);
@@ -136,7 +134,8 @@ int main(){
                 //double V = vortices(L, N);
                 //meanVdensity[i] += V/(N*N);
             }
-    }
+            }
+
 
     for (int i = 0; i < max_iters; i++ ){
         meanEdensity[i] /= R;
@@ -149,4 +148,5 @@ int main(){
     //write_outputV.close();
 
     //}
+
 }
