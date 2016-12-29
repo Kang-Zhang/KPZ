@@ -12,7 +12,6 @@ using namespace std;
 
 //define parameters
 const int N = 64;
-double dt = 0.05;
 double Dx = 1;
 double Dy = 1;
 double lx = 0;
@@ -46,6 +45,10 @@ matrix change_lattice(matrix& L_new, matrix& L, double c_L, int N, double Dx,
             //Euler update for KPZ equation
             double L_step = dt*(diffX + diffY + nonlinX + nonlinY + noise);
             L_new[i][j] = fmod((L[i][j] - L_step),2.0*M_PI);
+            if (L_new[i][j] < 0)
+            {
+                L_new[i][j] += 2.0*M_PI;
+            }
         }
     }
     return L_new;
@@ -94,21 +97,99 @@ double vortices(matrix& L_new, int N){
     return num/2.0*M_PI;
 }
 
-int main(){
-    //initial configuration of NxN lattice, each site with initial phase between 0 and 2pi chosen using random number generator
-
-    //define parameters
-    const int max_iters = 100;
-    int R = 5; //number of realisations
-    //for (double c_L=0; c_L<=5; c_L+=0.5){
-    double c_L = 0.0;
-
+void outputV(int max_iters, int R, double c_L, int N, double Dx,
+                      double Dy, double lx, double ly, double dt)
+{
     stringstream cL;
-    cL << fixed << setprecision(1) << c_L;
-    ofstream write_outputE ("KPZProjectGraphs/" + cL.str()+ "E.txt");
-    ofstream write_outputV ("KPZProjectGraphs/" + cL.str()+ "V.txt"); //this seems to give nan in E file
+    cL << fixed << setprecision(2) << c_L;
+    stringstream l_x;
+    l_x << fixed << setprecision(2) << lx;
+    stringstream l_y;
+    l_y << fixed << setprecision(2) << ly;
+    stringstream Lsize;
+    Lsize << N;
+    ofstream write_outputV ("KPZProjectGraphs/" + Lsize.str() + "-" + cL.str() + "-" + l_x.str() + "-" + l_y.str() + "V.txt");
 
-    array<double, max_iters> meanEdensity;
+    for (int r = 0; r<R;r++)
+    {
+        uniform_real_distribution<> dis(0,2*M_PI);
+        matrix L;
+        for(int i = 0; i<N; i++){
+            for(int j = 0; j<N; j++){
+                    L[i][j] = dis(gen);
+            }}
+        matrix L_new;
+
+        cout << r << "\n";
+            for (int i = 0; i < max_iters; i++)
+            {
+                L = change_lattice(L_new, L, c_L, N, Dx, Dy, lx, ly, dt);
+
+                double V = vortices(L, N);
+                write_outputV << V << " ";
+
+            }
+            write_outputV << "\n";
+            }
+
+    write_outputV.close();
+
+}
+
+void outputE(int max_iters, int R, double c_L, int N, double Dx,
+                      double Dy, double lx, double ly, double dt)
+{
+    stringstream cL;
+    cL << fixed << setprecision(2) << c_L;
+    stringstream l_x;
+    l_x << fixed << setprecision(2) << lx;
+    stringstream l_y;
+    l_y << fixed << setprecision(2) << ly;
+    stringstream Lsize;
+    Lsize << N;
+    ofstream write_outputE ("KPZProjectGraphs/" + Lsize.str() + "-" + cL.str() + "-" + l_x.str() + "-" + l_y.str() + "E.txt");
+
+    for (int r = 0; r<R;r++)
+    {
+        uniform_real_distribution<> dis(0,2*M_PI);
+        matrix L;
+        for(int i = 0; i<N; i++){
+            for(int j = 0; j<N; j++){
+                    L[i][j] = dis(gen);
+            }}
+        matrix L_new;
+
+        cout << r << "\n";
+            for (int i = 0; i < max_iters; i++)
+            {
+                L = change_lattice(L_new, L, c_L, N, Dx, Dy, lx, ly, dt);
+
+                double E = energy(L, N, Dx, Dy);
+                write_outputE << E/(N*N) << " ";
+            }
+            write_outputE << "\n"; //new line after each realisation
+            }
+
+    write_outputE.close();
+
+}
+
+void outputEV(int max_iters, int R, double c_L, int N, double Dx,
+                      double Dy, double lx, double ly, double dt)
+{
+    stringstream cL;
+    cL << fixed << setprecision(2) << c_L;
+    //cL << fixed << setprecision(1) << c_L+0.01;
+    stringstream l_x;
+    l_x << fixed << setprecision(2) << lx;
+    stringstream l_y;
+    l_y << fixed << setprecision(2) << ly;
+    stringstream Lsize;
+    Lsize << N;
+    ofstream write_outputE ("KPZProjectGraphs/" + Lsize.str() + "-" + cL.str() + "-" + l_x.str() + "-" + l_y.str() + "E.txt");
+    ofstream write_outputV ("KPZProjectGraphs/" + Lsize.str() + "-" + cL.str() + "-" + l_x.str() + "-" + l_y.str() + "V.txt");
+
+    //array<double, max_iters> meanEdensity;
     //array<double, max_iters> meanVdensity; //this seems to give nan in E file
 
     for (int r = 0; r<R;r++)
@@ -125,28 +206,50 @@ int main(){
             for (int i = 0; i < max_iters; i++)
             {
                 L = change_lattice(L_new, L, c_L, N, Dx, Dy, lx, ly, dt);
+
                 double E = energy(L, N, Dx, Dy);
-                //write_output << E/(N*N) << " ";
+                write_outputE << E/(N*N) << " ";
+
                 //cout << E/(N*N) << "\n";
-                meanEdensity[i] += E/(N*N);
+                // meanEdensity[i] += E/(N*N);
                 //cout << meanEdensity[i] << "\n";
 
-                //double V = vortices(L, N);
+                double V = vortices(L, N);
+                write_outputV << V << " ";
                 //meanVdensity[i] += V/(N*N);
             }
+            write_outputE << "\n"; //new line after each realisation
+            write_outputV << "\n";
             }
 
-
-    for (int i = 0; i < max_iters; i++ ){
-        meanEdensity[i] /= R;
+    //for (int i = 0; i < max_iters; i++ ){
+        //meanEdensity[i] /= R;
         //meanVdensity[i] /= R;
-        write_outputE << meanEdensity[i] << " ";
+        //write_outputE << meanEdensity[i] << " ";
         //cout << meanEdensity[i] << "\n";
-        //write_outputV << meanVdensity[i] << " ";
-    }
+        //write_outputV << meanVdensity[i] << " ";}
+
     write_outputE.close();
-    //write_outputV.close();
+    write_outputV.close();
+
+
+}
+
+int main(){
+    //initial configuration of NxN lattice, each site with initial phase between 0 and 2pi chosen using random number generator
+
+    //define parameters
+    double c_L = 3.35;
+    double dt = 0.05;
+    const int max_iters = 100;
+    int R = 10; //number of realisations
+
+    //for (double c_L=0; c_L<=7; c_L+=0.5){
+    outputEV(max_iters, R, c_L, N, Dx, Dy, lx, ly, dt);
+    //outputE(max_iters, R, c_L, N, Dx, Dy, lx, ly, dt);
+    //outputV(max_iters, R, c_L, N, Dx, Dy, lx, ly, dt);
 
     //}
+
 
 }
