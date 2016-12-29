@@ -235,19 +235,80 @@ void outputEV(int max_iters, int R, double c_L, int N, double Dx,
 
 }
 
+void writeEV(int max_iters, int R, double c_L, int N, double Dx,
+                      double Dy, double lx, double ly, double dt, bool writeE, bool writeV)
+{
+    stringstream cL;
+    cL << fixed << setprecision(2) << c_L;
+    //cL << fixed << setprecision(1) << c_L+0.01;
+    stringstream l_x;
+    l_x << fixed << setprecision(2) << lx;
+    stringstream l_y;
+    l_y << fixed << setprecision(2) << ly;
+    stringstream Lsize;
+    Lsize << N;
+
+    ofstream write_outputE;
+    ofstream write_outputV;
+    if (writeE){
+        write_outputE.open("KPZProjectGraphs/" + Lsize.str() + "-" + cL.str() + "-" + l_x.str() + "-" + l_y.str() + "E.txt");}
+    if (writeV){
+        write_outputV.open("KPZProjectGraphs/" + Lsize.str() + "-" + cL.str() + "-" + l_x.str() + "-" + l_y.str() + "V.txt");}
+
+    for (int r = 0; r<R;r++)
+    {
+        uniform_real_distribution<> dis(0,2*M_PI);
+        matrix L;
+        for(int i = 0; i<N; i++){
+            for(int j = 0; j<N; j++){
+                    L[i][j] = dis(gen);
+            }}
+        matrix L_new;
+
+        cout << r << "\n";
+            for (int i = 0; i < max_iters; i++)
+            {
+                L = change_lattice(L_new, L, c_L, N, Dx, Dy, lx, ly, dt);
+                if (writeE){
+                double E = energy(L, N, Dx, Dy);
+                write_outputE << E/(N*N) << " ";}
+                //else {continue;}
+
+                if (writeV){
+                double V = vortices(L, N);
+                write_outputV << V << " ";}
+                //else {continue;}
+
+            }
+            if (writeE){write_outputE << "\n";} //new line after each realisation
+            //else {continue;}
+            if (writeV){write_outputV << "\n";}
+            //else {continue;}
+            }
+
+    if (writeE){write_outputE.close();}
+    if (writeV){write_outputV.close();}
+
+
+}
+
 int main(){
     //initial configuration of NxN lattice, each site with initial phase between 0 and 2pi chosen using random number generator
 
     //define parameters
-    double c_L = 3.35;
+    double c_L = 3.45;
     double dt = 0.05;
     const int max_iters = 100;
     int R = 10; //number of realisations
+    bool writeE = true;
+    bool writeV = false;
 
     //for (double c_L=0; c_L<=7; c_L+=0.5){
-    outputEV(max_iters, R, c_L, N, Dx, Dy, lx, ly, dt);
+    //outputEV(max_iters, R, c_L, N, Dx, Dy, lx, ly, dt);
     //outputE(max_iters, R, c_L, N, Dx, Dy, lx, ly, dt);
     //outputV(max_iters, R, c_L, N, Dx, Dy, lx, ly, dt);
+
+    writeEV(max_iters, R, c_L, N, Dx, Dy, lx, ly, dt, writeE, writeV);
 
     //}
 
