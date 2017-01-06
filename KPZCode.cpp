@@ -11,11 +11,9 @@
 using namespace std;
 
 //define parameters
-const int N = 64;
 double Dx = 1;
 double Dy = 1;
-double lx = 0;
-double ly = 0;
+const int N = 64;
 
 random_device rd;
 mt19937 gen(rd());
@@ -167,24 +165,87 @@ void writeEV(int max_iters, int R, double c_L, int N, double Dx, double Dy, doub
     if (writeV){
         if (converge_test){write_outputV_t.close();}
         else{write_outputV.close();}}
+
+    cout << c_L << "\n"; //just to check for which c_L values data has been produced
+}
+
+void writequench(double cL_init, double cL_final, int init_iter, int final_iter, int Gamma_Q, int N, double Dx,
+                 double Dy, double lx, double ly, double dt)
+{
+    stringstream cL_i;
+    cL_i << fixed << setprecision(2) << cL_init;
+    stringstream cL_f;
+    cL_f << fixed << setprecision(2) << cL_final;
+    stringstream l_x;
+    l_x << fixed << setprecision(2) << lx;
+    stringstream l_y;
+    l_y << fixed << setprecision(2) << ly;
+    stringstream Lsize;
+    Lsize << N;
+    stringstream GammaQ;
+    GammaQ << Gamma_Q;
+
+    ofstream write_quenchV;
+    write_quenchV.open("KPZProjectGraphs/" + Lsize.str() + "-" + cL_i.str() + "-" + cL_f.str() + "-" + GammaQ.str() + "-" + l_x.str() + "-" + l_y.str() + "V.txt");
+
+    //obtain initial matrix and initial number of vortices for initial cL value
+    matrix L_init; //to store initial lattice in quenching
+    matrix L; //to initialise random matrix for configuring initial lattice
+    uniform_real_distribution<> dis(0,2*M_PI);
+    for(int i = 0; i<N; i++){
+        for(int j = 0; j<N; j++){
+                L[i][j] = dis(gen);}}
+    matrix L_new; //initialise random matrix for storing new lattice
+    for(int i = 0; i < init_iter; i++){
+        L = change_lattice(L_new, L, cL_init, N, Dx, Dy, lx, ly, dt);}
+    //steady state reached
+    L_init = L;
+    double V_init = vortices(L_init, N); //initial number of vortices at t = 0
+    write_quenchV << V_init << " ";
+
+    //finite quenching:
+    matrix L_current; //to store current lattice in time (current iteration)
+    matrix L_temp; //initialise temp matrix for storing lattice in time
+    L_current = L_init; //at t = 0, current lattice = initial lattice
+    double cL_quench = cL_init;
+
+    for(int t = 1; t <= final_iter; t++){
+        if(t <= Gamma_Q){
+            double dcL = (cL_final - cL_init)/double(Gamma_Q);
+            cL_quench += dcL;
+            L_current = change_lattice(L_temp, L_current, cL_quench, N, Dx, Dy, lx, ly, dt);
+            double V_current = vortices(L_current, N);
+            write_quenchV << V_current << " ";
+            //check cL values
+            cout << cL_quench << "\n";}
+        //after quench, lattice has noise corresponding to cL_final value
+        else{
+        L_current = change_lattice(L_temp, L_current, cL_final, N, Dx, Dy, lx, ly, dt);
+        double V_current = vortices(L_current, N);
+        write_quenchV << V_current << " ";}
+    }
+    write_quenchV.close();
 }
 
 int main(){
     //initial configuration of NxN lattice, each site with initial phase between 0 and 2pi chosen using random number generator
 
     //define parameters
-    double c_L = 0;
     double dt = 0.05;
-    const int max_iters = 3000;
-    int R = 20; //number of realisations
-    bool writeE = true;
-    bool writeV = false;
-    bool converge_test = true;
     double toleranceE = 1e-4;
+    //writeEV(1400, 70, 3.75, N, Dx, Dy, 0.25, -0.25, dt, true, false, false, toleranceE);
+    //writeEV(1100, 70, 3.85, N, Dx, Dy, 0.25, -0.25, dt, true, false, false, toleranceE);
+    //writeEV(1400, 70, 3.5, N, Dx, Dy, 0.5, -0.5, dt, true, false, false, toleranceE);
 
-    for (double c_L=0; c_L<=7; c_L+=0.5){
-    writeEV(max_iters, R, c_L, N, Dx, Dy, lx, ly, dt, writeE, writeV, converge_test, toleranceE);
-    }
+    double lx = 0;
+    double ly = 0;
+    double cL_final = 2;
+    double cL_init = 7;
+    int init_iter = 200; //iterations to reach steady state for initial cL - known from previous data
+    int final_iter = 700; //iterations to reach steady state for final cL - known from previous data
 
-
+    //int Gamma_Qfinal = floor(log2(final_iter/2.0));
+    for (int i = 1; i <= 8; i++){ // max power always 8 if considering final_iter < 1000
+        int Gamma_Q = pow(2,i);
+        writequench(cL_init, cL_final, init_iter, final_iter, Gamma_Q, N, Dx, Dy, lx, ly, dt);}
 }
