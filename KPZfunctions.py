@@ -66,7 +66,7 @@ def dataEV(c_L, N, l_x, l_y, itersRinfo = True):
     yE = np.loadtxt('KPZProjectGraphs/'+ str(N) + "-" + str(format(c_L, '.2f')) + "-" + 
                     str(format(l_x, '.2f')) + "-" + str(format(l_y, '.2f')) + 'E.txt')
     avgE = np.mean(yE, axis=0) #average energy data
-    CV = np.var(yE[:,-1], ddof = 0)/(c_L**2) #variance of last column gives variance of steady value
+    varssE = np.var(yE[:,-1], ddof = 0)/(c_L**2) #variance of last column gives variance of steady value
     xE = np.arange(0,len(avgE))
     
     #import vortices data
@@ -78,7 +78,7 @@ def dataEV(c_L, N, l_x, l_y, itersRinfo = True):
     if itersRinfo:
         print "cL: ", c_L , " E_R, E_iterations: ", yE.shape , " V_R, V_iterations: ", yV.shape
         
-    return xE, avgE, xV, avgV, CV
+    return xE, avgE, xV, avgV, varssE
 
 def plotE(xE, avgE, c_L, N, l_x, l_y, save = False):
     plt.figure()
@@ -104,26 +104,51 @@ def plotV(xV, avgV, c_L, N, l_x, l_y, save = False):
         plt.savefig('KPZProjectGraphs/Plots/'+ str(N) + "-" + str(format(c_L, '.2f')) + "-" + 
                         str(format(l_x, '.2f')) + "-" + str(format(l_y, '.2f')) + 'V.jpg', bbox_inches='tight', pad_inches=0.1)
 
-def allEV(c_Lplot, N, l_x, l_y, display = True, save = False, itersRinfo = True):
+
+def allEV(c_Lplot, N, l_x, l_y, display = True, save = False, itersRinfo = True, All = False):
     """Function to return average energy and vortices values at steady state for all cL values given lattice size, lambda_x,
     lambda_y with option to plot average energy and vortices against time, to display and/or to save plots"""
     dataE = []
     dataV = []
     avgssE = np.zeros(len(c_Lplot))
     avgssV = np.zeros(len(c_Lplot))
-    #CVs = np.zeros(len(c_Lplot))
+    CVs = np.zeros(len(c_Lplot))
+    
+    if All:
+        fig = plt.figure(figsize=(5,8))
+        ax1 = fig.add_subplot(211)
+        ax2 = fig.add_subplot(212)
+        
+        ax1.set_title(r'Lattice size $%s^2$'%(N) + r' with $\lambda_x = %s$'%(l_x) + r' and $\lambda_y = %s$'%(l_y)
+                      + '\n' + r'Average energy density over time', fontsize='medium')
+        ax1.set_xlabel('time [T]', fontsize='small')
+        ax1.set_ylabel(r'$<E>/N^2$', fontsize='small')
 
+        ax2.set_title(r'Average number of vortices over time', fontsize='medium')
+        ax2.set_xlabel('time [T]', fontsize='small')
+        ax2.set_ylabel('number of vortices', fontsize='small')
+        
+        color=plt.cm.rainbow(np.linspace(0,1,len(c_Lplot)))
+        plt.tight_layout()
+       
     for i in range(0,len(c_Lplot)): 
-        xE, avgE, xV, avgV, CV = dataEV(c_Lplot[i],N,l_x,l_y, itersRinfo)
+        xE, avgE, xV, avgV, varssE = dataEV(c_Lplot[i],N,l_x,l_y, itersRinfo)
         dataE.append(Scatter(x=xE,y=avgE, name = 'c_L = %s'%(c_Lplot[i])))
         dataV.append(Scatter(x=xV,y=avgV, name = 'c_L = %s'%(c_Lplot[i])))
         avgssE[i] = avgE[-1] #steady state is the last value of average values over realisations
         avgssV[i] = avgV[-1]
-        #CVs[i] = CV #specific heat for each c_L
+        CVs[i] = varssE/(c_Lplot[i]**2) #specific heat for each c_L
         
         if save:
-            plotE(xE, avgE, c_Lplot[i], N, l_x, l_y, save = True)
-            plotV(xV, avgV, c_Lplot[i], N, l_x, l_y, save = True)
+            if All:
+                ax1.plot(xE, avgE, label = 'c_L = %s'%(c_Lplot[i]), c=color[i])
+                ax2.plot(xV, avgV, label = 'c_L = %s'%(c_Lplot[i]), c=color[i])
+                plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5, fontsize = 'x-small')
+                plt.savefig('KPZProjectGraphs/Plots/'+ str(N) + "-" + str(format(l_x, '.2f')) + "-" + str(format(l_y, '.2f')) + 'allEV.jpg', bbox_inches='tight', pad_inches=0.1)
+                
+            else:
+                plotE(xE, avgE, c_Lplot[i], N, l_x, l_y, save = True)
+                plotV(xV, avgV, c_Lplot[i], N, l_x, l_y, save = True)
         
     if display:
         layoutE = Layout(
@@ -142,7 +167,7 @@ def allEV(c_Lplot, N, l_x, l_y, display = True, save = False, itersRinfo = True)
         iplot(dict(data=dataV,layout=layoutV))
 
     
-    return avgssE, avgssV
+    return avgssE, avgssV, CVs
 
 def avgEVt(c_L, N, l_x, l_y, display = False):
     """Function to return average steady state energy and vortices values and average number of iterations needed for
@@ -225,6 +250,9 @@ def plot_specheatdiff(c_Lplot, avgssE, N, l_x, l_y, display = True, save = False
     c_Lnew = c_Lplot[:len(dcL)] + dcL*0.5
     dEdcL = np.diff(avgssE)/dcL
     
+    i_max = np.argmax(dEdcL)
+    print c_Lnew[i_max]
+    
     if save:
         plt.figure()
         plt.plot (c_Lnew,dEdcL) #"o" for scatter
@@ -249,10 +277,36 @@ def plot_specheatdiff(c_Lplot, avgssE, N, l_x, l_y, display = True, save = False
 
     return c_Lnew, dEdcL
 
-def plotquenchV(xV, yV, Gamma_Q, cL_i, cL_f, N, l_x, l_y, save = False):
+def plot_specheateqn(c_Lplot, CVs, N, l_x, l_y, display = True, save = False):
+    """Function to plot C_V from using equation with option to plot and/or save graphs"""
+    
+    if save:
+        plt.figure()
+        plt.plot (c_Lplot[8:23],CVs[8:23]) #"o" for scatter
+        plt.title(r'Specific heat using equation for lattice size $%s^2$'%(N) + '\n' +
+                  r' with $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
+        plt.xlabel(r'$c_L$')
+        plt.ylabel(r'$C_V$')
+        plt.savefig('KPZProjectGraphs/Plots/'+ str(N) + "-"  + str(format(l_x, '.2f')) + "-" +
+                    str(format(l_y, '.2f')) + 'specheateqn.jpg', bbox_inches='tight', pad_inches=0.1)
+
+    if display:
+        line = Scatter(x=c_Lplot[8:23],y=CVs[8:23], mode = "lines+markers")
+        data = [line]
+
+        layout = Layout(
+            title = 'Specific heat using equation',
+            xaxis = dict(title = 'Noise'),
+            yaxis = dict(title = 'C_V'),
+            width = 700)
+
+        iplot(dict(data=data,layout=layout))
+
+
+def plotquenchV(xV, avgV, Gamma_Q, cL_i, cL_f, N, l_x, l_y, save = False):
     plt.figure()
-    plt.plot(xV,yV)
-    plt.title(r'Number of vortices over time for $\Gamma_Q =  %s$'%(Gamma_Q) + r', $c_{L_i} = %s$'%(cL_i) +  r' and $c_{L_f} = %s$'%(cL_f) + '\n' + r'with lattice size $%s^2$' %(N) + r', $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
+    plt.plot(xV,avgV)
+    plt.title(r'Average number of vortices over time for $\Gamma_Q =  %s$'%(Gamma_Q) + r', $c_{L_i} = %s$'%(cL_i) +  r' and $c_{L_f} = %s$'%(cL_f) + '\n' + r'with lattice size $%s^2$' %(N) + r', $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
     plt.xlabel('time [T]')
     plt.ylabel('number of vortices')
     
@@ -262,31 +316,36 @@ def plotquenchV(xV, yV, Gamma_Q, cL_i, cL_f, N, l_x, l_y, save = False):
 
 def plotVquench(cL_i, cL_f, Gamma_Qs, N, l_x, l_y, display = False, save = False):
     """Function to plot number of vortices against time for different quench rates with option to display and/or save graphs
-    and returns the log of the steady state number of vortices for each quench rate"""
+    and returns the steady state number of vortices for each quench rate"""
     data = []
     logVss = np.zeros(len(Gamma_Qs))
+    logtGamma = np.zeros(len(Gamma_Qs))
+    
 
     for i in range(0,len(Gamma_Qs)): 
         yV = np.loadtxt('KPZProjectGraphs/'+ str(N) + "-" + str(format(cL_i, '.2f')) + "-" + str(format(cL_f, '.2f')) + "-"
         + str(Gamma_Qs[i]) + "-" + str(format(l_x, '.2f')) + "-" + str(format(l_y, '.2f')) + 'V.txt')
-        xV = np.arange(0,len(yV))
-        data.append(Scatter(x=xV,y=yV, name = 'Gamma_Q = %s'%(Gamma_Qs[i])))
-        logVss[i] = np.log2(yV[-1])
+        avgV = np.mean(yV, axis=0) #average number of vortices data
+        xV = np.arange(0,len(avgV))
+        data.append(Scatter(x=xV,y=avgV, name = 'Gamma_Q = %s'%(Gamma_Qs[i])))
+        logtGamma[i] = np.log2(len(avgV)/avgV[-1])
+        logVss[i] = np.log2(avgV[-1])
+        
         
         if save:
-            plotquenchV(xV, yV, Gamma_Qs[i], cL_i, cL_f, N, l_x, l_y, save = True)
+            plotquenchV(xV, avgV, Gamma_Qs[i], cL_i, cL_f, N, l_x, l_y, save = True)
         
     if display:
         layout = Layout(
-        title = 'Number of vortices against time',
+        title = 'Average number of vortices against time',
         xaxis = dict(title = 'Time'),
         yaxis = dict(title = 'Number of vortices'),
         width = 700)
 
         iplot(dict(data=data,layout=layout))
         
-    return logVss
-    
+    return logVss, logtGamma
+
         
 """    if i <= 9:
         figE = plt.figure()
