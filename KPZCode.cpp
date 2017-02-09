@@ -11,9 +11,9 @@
 using namespace std;
 
 //define parameters
+const int N = 20;
 double Dx = 1;
 double Dy = 1;
-const int N = 64;
 
 random_device rd;
 mt19937 gen(rd());
@@ -35,8 +35,8 @@ matrix change_lattice(matrix& L_new, matrix& L, double c_L, int N, double Dx,
 
             double diffX = Dx*(sin(L[i][j] - L[i][periodic(j+1,N)]) + sin(L[i][j] - L[i][periodic(j-1,N)]));
             double diffY = Dy*(sin(L[i][j] - L[periodic(i-1,N)][j]) + sin(L[i][j] - L[periodic(i+1,N)][j]));
-            double nonlinX = lx*( cos(L[i][j] - L[i][periodic(j+1,N)]) + cos(L[i][j] - L[i][periodic(j-1,N)]) - 1);
-            double nonlinY = ly*(cos(L[i][j] - L[periodic(i-1,N)][j]) + cos(L[i][j] - L[periodic(i+1,N)][j]) - 1);
+            double nonlinX = (lx*0.5)*( cos(L[i][j] - L[i][periodic(j+1,N)]) + cos(L[i][j] - L[i][periodic(j-1,N)]) - 1);
+            double nonlinY = (ly*0.5)*(cos(L[i][j] - L[periodic(i-1,N)][j]) + cos(L[i][j] - L[periodic(i+1,N)][j]) - 1);
             double noise = 2*M_PI*c_L*dis(gen);
 
             //Euler update for KPZ equation
@@ -165,8 +165,7 @@ void writeEV(int max_iters, int R, double c_L, int N, double Dx, double Dy, doub
     if (writeV){
         if (converge_test){write_outputV_t.close();}
         else{write_outputV.close();}}
-
-    cout << c_L << "\n"; //just to check for which c_L values data has been produced
+        cout << c_L << "\n";
 }
 
 void writequench(double cL_init, double cL_final, int init_iter, int final_iter, int Gamma_Q, int N, double Dx,
@@ -233,6 +232,21 @@ int main(){
     //define parameters
     double dt = 0.05;
     double toleranceE = 1e-4;
+    double cL[29] = {0, 0.5, 1, 1.5, 2, 2.25, 2.5, 2.75, 3, 3.05, 3.15, 3.25, 3.35, 3.45, 3.5, 3.55, 3.6, 3.65, 3.7, 3.75, 3.85, 3.95, 4, 4.5, 5, 5.5, 6, 6.5, 7};
+    double Et[29] = {800,800,800,800,800,800,800,800,900,950,100,1100,1200,1300,1400,1500,1600,1600,1600,1100,1100,1000,900,500,400,400,300,200,160};
+    double ER[29] = {10,10,15,15,20,30,30,30,40,40,40,50,50,60,60,70,70,70,70,70,80,90,100,100,100,150,170,200,250};
+    double Vt[29] = {700,700,700,700,700,800,800,800,800,800,800,900,900,900,1100,1200,1300,1500,1500,1100,1100,1000,900,500,400,400,300,200,160};
+    double VR[29] = {25,30,20,40,20,20,30,40,30,40,40,50,40,50,50,40,50,50,50,60,50,60,60,100,120,140,180,200,250};
+
+    for (int i = 0; i < 29; i++)
+    {writeEV(Et[i], ER[i], cL[i], N, Dx, Dy, 0, 0, dt, true, false,false, toleranceE);
+    writeEV(Vt[i], VR[i], cL[i], N, Dx, Dy, 0, 0, dt, false, true,false, toleranceE);}
+
+
+/*
+    //define parameters
+    double dt = 0.05;
+    double toleranceE = 1e-4;
     //writeEV(1400, 70, 3.75, N, Dx, Dy, 0.25, -0.25, dt, true, false, false, toleranceE);
     //writeEV(1100, 70, 3.85, N, Dx, Dy, 0.25, -0.25, dt, true, false, false, toleranceE);
     //writeEV(1400, 70, 3.5, N, Dx, Dy, 0.5, -0.5, dt, true, false, false, toleranceE);
@@ -248,4 +262,6 @@ int main(){
     for (int i = 1; i <= 8; i++){ // max power always 8 if considering final_iter < 1000
         int Gamma_Q = pow(2,i);
         writequench(cL_init, cL_final, init_iter, final_iter, Gamma_Q, N, Dx, Dy, lx, ly, dt);}
+        */
+
 }
