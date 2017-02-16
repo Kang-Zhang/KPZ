@@ -346,6 +346,56 @@ def plotVquench(cL_i, cL_f, Gamma_Qs, N, l_x, l_y, display = False, save = False
         
     return logVss, logtGamma
 
+def plotVquenchvscL(cL_i, cL_f, Gamma_Qs, N, l_x, l_y, display = False, save = False):
+    """Function to plot number of vortices against cL for different quench rates with option to display and/or save graphs"""
+    data = []
+    
+    if save:
+        fig, ax = plt.subplots()
+        ax.set_title(r'Average number of vortices against noise parameter for lattice size $%s^2$' %(N)+ '\n' +
+                     r' with $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
+        ax.set_xlabel(r'$c_L$')
+        ax.set_ylabel(r'average number of vortices')
+        color=plt.cm.rainbow(np.linspace(0,1,len(Gamma_Qs)))
+        plt.tight_layout()
+        
+    for i in range(0,len(Gamma_Qs)): 
+        yV = np.loadtxt('KPZProjectGraphs/'+ str(N) + "-" + str(format(cL_i, '.2f')) + "-" + str(format(cL_f, '.2f')) + "-"
+        + str(Gamma_Qs[i]) + "-" + str(format(l_x, '.2f')) + "-" + str(format(l_y, '.2f')) + 'V.txt')
+        avgV = np.mean(yV,axis = 0)
+        
+        #calculate cL values
+        cL = np.zeros(len(avgV))
+        cL[0] = cL_i
+        dcL = (cL_f - cL_i)/Gamma_Qs[i]
+        cL_current = cL_i
+        for t in range(1, Gamma_Qs[i]+1):
+            cL_current += dcL
+            cL[t] = cL_current
+            
+        cL[Gamma_Qs[i]+1:] = cL_f
+        
+        data.append(Scatter(x=cL,y=avgV, name = 'Gamma_Q = %s'%(Gamma_Qs[i])))
+        
+        if save:
+            ax.plot(cL, avgV, label = r'$\Gamma_Q$ = %s'%(Gamma_Qs[i]), c = color[i])
+            plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0., fontsize = 'small')
+            plt.savefig('KPZProjectGraphs/Plots/'+ str(N) + 'quenchVvscL.jpg', bbox_inches='tight', pad_inches=0.1)
+       
+    if display:
+        layout = Layout(
+        title = 'Average number of vortices against noise parameter',
+        xaxis = dict(title = 'Noise parameter'),
+        yaxis = dict(title = 'Number of vortices'),
+        width = 700)
+
+        iplot(dict(data=data,layout=layout))
+        
+        
+        
+        
+        
+        
         
 """    if i <= 9:
         figE = plt.figure()
