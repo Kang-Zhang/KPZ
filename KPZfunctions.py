@@ -28,8 +28,8 @@ def EV(c_L, N, l_x, l_y, plot = False, display = False, save = False):
         #plot energy data
         plt.figure()
         plt.plot(xE,avgE)
-        plt.title(r'Average energy density over time for $c_L =  %s$'%(c_L) + '\n' + r'and lattice size $%s^2$' %(N)
-                  + r' with $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
+        #plt.title(r'Average energy density over time for $c_L =  %s$'%(c_L) + '\n' + r'and lattice size $%s^2$' %(N)
+                  #+ r' with $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
         plt.xlabel('time [T]')
         plt.ylabel(r'$<E>/N^2$')
         
@@ -44,8 +44,8 @@ def EV(c_L, N, l_x, l_y, plot = False, display = False, save = False):
         #plot vortices data
         plt.figure()
         plt.plot(xV,avgV)
-        plt.title(r'Average number of vortices over time for $c_L =  %s$'%(c_L) + '\n' + r'and lattice size $%s^2$' %(N)
-                  + r' with $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
+        #plt.title(r'Average number of vortices over time for $c_L =  %s$'%(c_L) + '\n' + r'and lattice size $%s^2$' %(N)
+                  #+ r' with $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
         plt.xlabel('time [T]')
         plt.ylabel('number of vortices')
         
@@ -83,8 +83,8 @@ def dataEV(c_L, N, l_x, l_y, itersRinfo = True):
 def plotE(xE, avgE, c_L, N, l_x, l_y, save = False):
     plt.figure()
     plt.plot(xE,avgE)
-    plt.title(r'Average energy density over time for $c_L =  %s$'%(c_L) + '\n' + r'and lattice size $%s^2$' %(N)
-              + r' with $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
+    #plt.title(r'Average energy density over time for $c_L =  %s$'%(c_L) + '\n' + r'and lattice size $%s^2$' %(N)
+              #+ r' with $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
     plt.xlabel('time [T]')
     plt.ylabel(r'$<E>/N^2$')
     
@@ -95,8 +95,8 @@ def plotE(xE, avgE, c_L, N, l_x, l_y, save = False):
 def plotV(xV, avgV, c_L, N, l_x, l_y, save = False):
     plt.figure()
     plt.plot(xV,avgV)
-    plt.title(r'Average number of vortices over time for $c_L =  %s$'%(c_L) + '\n' + r'and lattice size $%s^2$' %(N)
-              + r' with $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
+    #plt.title(r'Average number of vortices over time for $c_L =  %s$'%(c_L) + '\n' + r'and lattice size $%s^2$' %(N)
+              #+ r' with $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
     plt.xlabel('time [T]')
     plt.ylabel('number of vortices')
     
@@ -119,14 +119,14 @@ def allEV(c_Lplot, N, l_x, l_y, display = True, save = False, itersRinfo = True,
         ax1 = fig.add_subplot(211)
         ax2 = fig.add_subplot(212)
         
-        ax1.set_title(r'Lattice size $%s^2$'%(N) + r' with $\lambda_x = %s$'%(l_x) + r' and $\lambda_y = %s$'%(l_y)
-                      + '\n' + r'Average energy density over time', fontsize='medium')
+        #ax1.set_title(r'Lattice size $%s^2$'%(N) + r' with $\lambda_x = %s$'%(l_x) + r' and $\lambda_y = %s$'%(l_y)
+                      #+ '\n' + r'Average energy density over time', fontsize='medium')
         ax1.set_xlabel('time [T]', fontsize='small')
         ax1.set_ylabel(r'$<E>/N^2$', fontsize='small')
 
-        ax2.set_title(r'Average number of vortices over time', fontsize='medium')
+        #ax2.set_title(r'Average number of vortices over time', fontsize='medium')
         ax2.set_xlabel('time [T]', fontsize='small')
-        ax2.set_ylabel('number of vortices', fontsize='small')
+        ax2.set_ylabel('r$<V>$', fontsize='small')
         
         color=plt.cm.rainbow(np.linspace(0,1,len(c_Lplot)))
         plt.tight_layout()
@@ -200,8 +200,8 @@ def plotavgE(c_Lplot, avgssE, N, l_x, l_y, display = True, save = False):
     if save:
         plt.figure()
         plt.plot(c_Lplot,avgssE) #"o" for scatter
-        plt.title(r'Average energy density against noise parameter for lattice size $%s^2$' %(N) + '\n' +
-                  r' with $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
+        #plt.title(r'Average energy density against noise parameter for lattice size $%s^2$' %(N) + '\n' +
+                  #r' with $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
         plt.xlabel(r'$c_L$')
         plt.ylabel(r'$<E>/N^2$')
         plt.savefig('KPZProjectGraphs/Plots/'+ str(N) + "-"  + str(format(l_x, '.2f')) + "-" +
@@ -256,8 +256,8 @@ def plot_specheatdiff(c_Lplot, avgssE, N, l_x, l_y, display = True, save = False
     if save:
         plt.figure()
         plt.plot (c_Lnew,dEdcL) #"o" for scatter
-        plt.title('Change in average energy density over change in noise \n' + r'against noise for lattice size $%s^2$' %(N)+
-                  r' with $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
+        #plt.title('Change in average energy density over change in noise \n' + r'against noise for lattice size $%s^2$' %(N)+
+                  #r' with $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
         plt.xlabel(r'$c_L$')
         plt.ylabel(r'$d<E>/dc_L$')
         plt.savefig('KPZProjectGraphs/Plots/'+ str(N) + "-"  + str(format(l_x, '.2f')) + "-" +
@@ -283,8 +283,8 @@ def plot_specheateqn(c_Lplot, CVs, N, l_x, l_y, display = True, save = False):
     if save:
         plt.figure()
         plt.plot (c_Lplot[8:23],CVs[8:23]) #"o" for scatter
-        plt.title(r'Specific heat using equation for lattice size $%s^2$'%(N) + '\n' +
-                  r' with $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
+        #plt.title(r'Specific heat using equation for lattice size $%s^2$'%(N) + '\n' +
+                  #r' with $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
         plt.xlabel(r'$c_L$')
         plt.ylabel(r'$C_V$')
         plt.savefig('KPZProjectGraphs/Plots/'+ str(N) + "-"  + str(format(l_x, '.2f')) + "-" +
@@ -306,7 +306,7 @@ def plot_specheateqn(c_Lplot, CVs, N, l_x, l_y, display = True, save = False):
 def plotquenchV(xV, avgV, Gamma_Q, cL_i, cL_f, N, l_x, l_y, save = False):
     plt.figure()
     plt.plot(xV,avgV)
-    plt.title(r'Average number of vortices over time for $\Gamma_Q =  %s$'%(Gamma_Q) + r', $c_{L_i} = %s$'%(cL_i) +  r' and $c_{L_f} = %s$'%(cL_f) + '\n' + r'with lattice size $%s^2$' %(N) + r', $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
+    #plt.title(r'Average number of vortices over time for $\Gamma_Q =  %s$'%(Gamma_Q) + r', $c_{L_i} = %s$'%(cL_i) +  r' and $c_{L_f} = %s$'%(cL_f) + '\n' + r'with lattice size $%s^2$' %(N) + r', $\lambda_x = %s$ '%(l_x) + r'and $\lambda_y = %s$'%(l_y))
     plt.xlabel('time [T]')
     plt.ylabel('number of vortices')
     
@@ -346,10 +346,12 @@ def plotVquench(cL_i, cL_f, Gamma_Qs, N, l_x, l_y, display = False, save = False
         
     return logVss, logtGamma
 
-def plotVquenchvscL(cL_i, cL_f, Gamma_Qs, N, l_x, l_y, display = False, save = False):
+def plotVquenchvscL(cL_i, cL_f, c_Lplot, avgssV, Gamma_Qs, N, l_x, l_y, display = False, save = False):
     """Function to plot number of vortices against cL for different quench rates with option to display and/or save graphs"""
     data = []
+    cLs = []
     
+       
     if save:
         fig, ax = plt.subplots()
         ax.set_title(r'Average number of vortices against noise parameter for lattice size $%s^2$' %(N)+ '\n' +
@@ -375,13 +377,19 @@ def plotVquenchvscL(cL_i, cL_f, Gamma_Qs, N, l_x, l_y, display = False, save = F
             
         cL[Gamma_Qs[i]+1:] = cL_f
         
-        data.append(Scatter(x=cL,y=avgV, name = 'Gamma_Q = %s'%(Gamma_Qs[i])))
+        cLs.append(cL)
+        
+        data.append(Scatter(x=cL,y=avgV, name = 'Gamma_Q = %s'%(Gamma_Qs[i]), mode = "lines+markers"))
+        
+        cLf_index = int(np.where(c_Lplot==cL_f)[0])
         
         if save:
             ax.plot(cL, avgV, label = r'$\Gamma_Q$ = %s'%(Gamma_Qs[i]), c = color[i])
+            ax.plot(c_Lplot[cLf_index:],avgssV[cLf_index:], label = r'steady state')
             plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0., fontsize = 'small')
             plt.savefig('KPZProjectGraphs/Plots/'+ str(N) + 'quenchVvscL.jpg', bbox_inches='tight', pad_inches=0.1)
-       
+            
+    data.append(Scatter(x=c_Lplot[cLf_index:],y=avgssV[cLf_index:], name = 'steady state'))
     if display:
         layout = Layout(
         title = 'Average number of vortices against noise parameter',
@@ -391,11 +399,52 @@ def plotVquenchvscL(cL_i, cL_f, Gamma_Qs, N, l_x, l_y, display = False, save = F
 
         iplot(dict(data=data,layout=layout))
         
-        
-        
-        
-        
-        
+    #return cLs
+
+def tfromcL(cL, Gamma_Q, cL_f, cL_i):
+    #convert noise parameter values to t
+    return Gamma_Q*((cL - cL_i)/(cL_f - cL_i))
+
+def plot_t_hat(cLc, cL1s, Gamma_Qs, cL_f, cL_i):
+    t1 = np.zeros(len(Gamma_Qs))
+    tc = np.zeros(len(Gamma_Qs))
+    t_hat = np.zeros(len(Gamma_Qs))
+    cLcs = cLc*np.ones(len(Gamma_Qs))
+    for i in range(0, len(Gamma_Qs)):
+        t1[i] = tfromcL(cL1s[i], Gamma_Qs[i], cL_f, cL_i)
+        tc[i] = tfromcL(cLcs[i], Gamma_Qs[i], cL_f, cL_i)
+        t_hat[i] = tc[i] - t1[i]
+
+    print 't1: ', t1, 'tc: ', tc[0], 't_hat: ', t_hat
+    
+    plt.figure()
+    plt.plot(Gamma_Qs, t_hat, "o")
+    plt.xlabel(r'$\hat{t}$')
+    plt.ylabel(r'$\Gamma_Q$')
+    #plt.title(r'Quench rate $\Gamma_Q$ against freezeout time $\hat{t}$')
+    plt.show()
+    
+    return t_hat
+
+
+def tau(tau_guess, c_L, N, l_x, l_y):
+    yV = np.loadtxt('KPZProjectGraphs/'+ str(N) + "-" + str(format(c_L, '.2f')) + "-" 
+                    + str(format(l_x, '.2f')) + "-" + str(format(l_y, '.2f')) + 'V.txt')
+    avgV = np.mean(yV, axis=0)
+    xV = np.arange(0,len(avgV))
+    
+    f = np.zeros(len(xV) - tau_guess)
+    for i in range(0,len(f)):
+        f[i] = (avgV[tau_guess+i] - avgV[-1])/avgV[-1]
+
+    data = [Scatter(x= range(tau_guess,tau_guess+len(f)), y=f)]
+    layout = Layout(
+    xaxis = dict(title = 'time'),
+    yaxis = dict(title = 'f', range=[-0.001, 0.001]),
+    width = 500)
+
+    iplot(dict(data=data,layout=layout))
+
         
 """    if i <= 9:
         figE = plt.figure()
