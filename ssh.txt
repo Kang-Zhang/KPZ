@@ -1,0 +1,62 @@
+[zcapkja@aws5 ava]$ scp kpzquench azamora@scorpius.phys.ucl.ac.uk:~/
+azamora@scorpius.phys.ucl.ac.uk's password: 
+/homes/azamora/.bashrc: line 6: module: command not found
+kpzquench                                                                                                                                                                                                  100%   47KB  47.1KB/s   00:00    
+[zcapkja@aws5 ava]$ ssh azamora@phys.ucl.ac.uk
+ssh_exchange_identification: Connection closed by remote host
+[zcapkja@aws5 ava]$ ssh azamora@scorpius.phys.ucl.ac.uk
+azamora@scorpius.phys.ucl.ac.uk's password: 
+Last login: Fri Feb 17 17:01:20 2017 from aws5.asteroids.phys.ucl.ac.uk
+
+scorpius [x86_64] 1013$ scp data_kpz_kp1.4ks_p0.1_kappa0.002_detu0_e5.mat zcapkja@aws5.phys.ucl.ac.uk:~/
+ssh: Could not resolve hostname aws5.phys.ucl.ac.uk: Name or service not known
+lost connection
+scorpius [x86_64] 1014$ scp data_kpz_kp1.4ks_p0.1_kappa0.002_detu0_e5.mat zcapkja@aws5.asteroids.phys.ucl.ac.uk:~/
+The authenticity of host 'aws5.asteroids.phys.ucl.ac.uk (128.40.7.105)' can't be established.
+RSA key fingerprint is 7b:be:72:b0:89:75:28:85:05:10:2c:ac:85:1e:e6:9f.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'aws5.asteroids.phys.ucl.ac.uk,128.40.7.105' (RSA) to the list of known hosts.
+zcapkja@aws5.asteroids.phys.ucl.ac.uk's password: 
+data_kpz_kp1.4ks_p0.1_kappa0.002_detu0_e5.mat    
+
+zcapale@socrates.ucl.ac.uk first
+then ssh acalee@scorpius.phys.ucl.ac.uk
+
+send object file to acalee@scorpius.phys.ucl.ac.uk using
+	scp filename acalee@scorpius.phys.ucl.ac.uk:~/
+mkdir NameFolder to make folder
+./object file to run it with object file in directory
+scp -r foldername zcapkja@aws5.asteroids.phys.ucl.ac.uk:~/ to send folder
+
+Mac's network address in Sharing Remote Login
+
+scorpius/sculptor
+./kpzquench > output.dat & [runs in file so terminal can close]
+cat output.dat [cat prints on screen]
+
+avalee$ scp zcapkja@aws5.asteroids.phys.ucl.ac.uk:~/ava/Makefile /Users/avalee
+
+zcapkja@aws7.asteroids.phys.ucl.ac.uk
+
+(nohup ./cmd2>result2 &) && nohup ./cmd1>result1 & to run things in parallel and not kill processes when ssh connection is terminated
+
+(nohup ./kb1>1 &) && (nohup ./kb2>2 &) && (nohup ./kb3>3 &) && (nohup ./kb4>4 &)
+
+/opt/rh/devtoolset-1.1/root/usr/bin/g++ kb4.cpp -std=c++11 -o kb4
+
+scp kss4 acalee@scorpius.phys.ucl.ac.uk:~/
+
+scp kb4.cpp zcapkja@aws4.asteroids.phys.ucl.ac.uk:~/
+
+avalee$ scp -r acalee@scorpius.phys.ucl.ac.uk:~/KPZProjectData /Users/avalee
+
+(nohup ./kpz122>122 &) && (nohup ./kpz075>075 &) && (nohup ./kpzn075>n075 &)
+
+ssh zcapkja@aws4.asteroids.phys.ucl.ac.uk
+ssh acalee@scorpius.phys.ucl.ac.uk
+
+On Krishna’s computer:
+scp -r acalee@scorpius.phys.ucl.ac.uk:~/KPZProjectData ~/KPZData
+
+scp -r zcapkja@aws4.asteroids.phys.ucl.ac.uk:~/KPZProjectData /Users/avalee/Krishna
+
