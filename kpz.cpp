@@ -74,11 +74,11 @@ void writeEV(int max_iters, int R, double c_L, int N, double Dx, double Dy, doub
     stringstream Lsize; Lsize << N;
     ofstream write_outputE; ofstream write_outputV; ofstream write_outputE_t;   ofstream write_outputV_t;
     if (writeE){
-        if(converge_test){write_outputE_t.open("KPZProjectData/" + Lsize.str() + "-" + cL.str() + "-" + l_x.str() + "-" + l_y.str() + "E_t.txt");}
-        else{write_outputE.open("KPZProjectData/" + Lsize.str() + "-" + cL.str() + "-" + l_x.str() + "-" + l_y.str() + "E.txt");}}
+        if(converge_test){write_outputE_t.open("KPZData/" + Lsize.str() + "-" + cL.str() + "-" + l_x.str() + "-" + l_y.str() + "E_t.txt");}
+        else{write_outputE.open("KPZData/" + Lsize.str() + "-" + cL.str() + "-" + l_x.str() + "-" + l_y.str() + "E.txt");}}
     if (writeV){
-        if(converge_test){write_outputV_t.open("KPZProjectData/" + Lsize.str() + "-" + cL.str() + "-" + l_x.str() + "-" + l_y.str() + "V_t.txt");}
-        else{write_outputV.open("KPZProjectData/" + Lsize.str() + "-" + cL.str() + "-" + l_x.str() + "-" + l_y.str() + "V.txt");}}
+        if(converge_test){write_outputV_t.open("KPZData/" + Lsize.str() + "-" + cL.str() + "-" + l_x.str() + "-" + l_y.str() + "V_t.txt");}
+        else{write_outputV.open("KPZData/" + Lsize.str() + "-" + cL.str() + "-" + l_x.str() + "-" + l_y.str() + "V.txt");}}
     //Repeat for number of realisations R:
     for (int r = 0; r < R;r++){
         //Initialise random matrix for starting lattice configuration:
@@ -124,7 +124,9 @@ void writeEV(int max_iters, int R, double c_L, int N, double Dx, double Dy, doub
         else{write_outputE.close();}}
     if (writeV){
         if (converge_test){write_outputV_t.close();}
-        else{write_outputV.close();}}}
+        else{write_outputV.close();}}
+    cout << c_L << "\n"; //check value of cL
+}
 
 /*Function to simulate finite rate quenching and outputs data to text file*/
 void writequench(double cL_init, double cL_final, int init_iter, int Tau_Q, int N, double Dx,double Dy, double lx, double ly, double dt, int R){
@@ -135,9 +137,8 @@ void writequench(double cL_init, double cL_final, int init_iter, int Tau_Q, int 
     stringstream l_y;   l_y << fixed << setprecision(2) << ly;
     stringstream Lsize; Lsize << N;
     stringstream TauQ;  TauQ << Tau_Q;
-    stringstream realis;    realis << R;
     ofstream write_quenchV;
-    write_quenchV.open("KPZProjectData/" + Lsize.str() + "-" + cL_i.str() + "-" + cL_f.str() + "-" + TauQ.str() + "-" + l_x.str() + "-" + l_y.str() + "-" + realis.str() + "V.txt");
+    write_quenchV.open("KPZData/" + Lsize.str() + "-" + cL_i.str() + "-" + cL_f.str() + "-" + TauQ.str() + "-" + l_x.str() + "-" + l_y.str() +  "V.txt");
 
     for (int r = 0; r < R; r++) {
         //Obtain initial matrix and initial number of vortices for initial cL value:
@@ -158,9 +159,10 @@ void writequench(double cL_init, double cL_final, int init_iter, int Tau_Q, int 
         for(int t = 1; t <= Tau_Q; t++) {
             double dcL = (cL_final - cL_init)/double(Tau_Q);
             cL_quench += dcL; //decrease cL according to quench rate Tau_Q
-            L = change_lattice(L_new, L, cL_init, N, Dx, Dy, lx, ly, dt);
+            L = change_lattice(L_new, L, cL_quench, N, Dx, Dy, lx, ly, dt);
             double V_current = vortices(L, N);
             write_quenchV << V_current << " "; // write value ^= current cL
+            cout << cL_quench << "\n"; //check value of cL
         } //end of realisation & quench, lattice has noise ^= final cL
         write_quenchV << "\n";
         } //end of realisations, need to close files
